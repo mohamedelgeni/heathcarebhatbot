@@ -9,7 +9,7 @@ import random
 
 # Retrieve Hugging Face Hub API token from .env file
 load_dotenv()
-huggingfacehub_api_token = os.environ['HUGGINGFACEHUB_API_TOKEN']
+huggingfacehub_api_token = os.environ['Hhf_onpNHsPFFZNIUiTSNqpHxMRipgyzdxCoFb']
 
 st.set_page_config(page_title='Falcon-7B-Instruct chat',
                    page_icon=':parrot:', layout="wide",
