@@ -10,7 +10,9 @@ with st.sidebar:
     st.title('🦙💬 Llama 2 Chatbot')
     if 'REPLICATE_API_TOKEN' in st.secrets:
         replicate_api = st.secrets['REPLICATE_API_TOKEN']
+        st.warning('Please enter your credentials!', icon='⚠️')
     else:
+        st.success('Proceed to entering your prompt message!', icon='👉')
         replicate_api = st.text_input('Enter Replicate API token:', type='password')
         if not (replicate_api.startswith('r8_') and len(replicate_api)==40):
         else:
