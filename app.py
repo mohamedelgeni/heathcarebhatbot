@@ -11,7 +11,7 @@ import os
 
 # Step 2: Add a title to your Streamlit Application on Browser
 
-st.set_page_config(page_title="💬  2 Chatbot ")
+st.set_page_config(page_title="💬  Chatbot ")
 
 #Create a Side bar
 with st.sidebar:
@@ -23,7 +23,7 @@ with st.sidebar:
         st.warning('Please enter your credentials in the secrets.', icon='⚠️')
         st.stop()
 
-    st.subheader("Models and Parameters")
+    st.subheader(" ")
 
     llm = 'a16z-infra/llama7b-v2-chat:4f0a4744c7295c024a1de15e1a63c880d3da035fa1f49bfd344fe076074c8eea'
 
