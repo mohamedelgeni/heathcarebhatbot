@@ -23,4 +23,5 @@ if st.button("Send"):
         reply = response.json()["generated_text"]
         st.text_area("Bot's reply:", reply, height=200)
     else:
-        st.error("Failed to get response from the bot")
+        st.error(f"Failed to get response from the bot. Status code: {response.status_code}. Response: {response.text}")
+
