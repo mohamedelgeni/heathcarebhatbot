@@ -18,7 +18,7 @@ with st.sidebar:
     st.title("💬 Chatbot")
     st.header("Settings")
 
-    add_replicate_api = os.getenv('REPLICATE_API_TOKEN')
+    add_replicate_api = os.secrets('REPLICATE_API_TOKEN')
     if not (add_replicate_api and add_replicate_api.startswith('r8_') and len(add_replicate_api)==40):
         st.warning('Please enter your credentials in the secrets.', icon='⚠️')
         st.stop()
