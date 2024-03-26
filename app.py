@@ -16,7 +16,7 @@ st.set_page_config(page_title="💬  Chatbot ")
 #Create a Side bar
 with st.sidebar:
     st.title("💬 Chatbot")
-    st.header("Settings")
+    st.header(" ")
 
     add_replicate_api = st.secrets["REPLICATE_API_TOKEN"]
     if not (add_replicate_api and add_replicate_api.startswith('r8_') and len(add_replicate_api)==40):
