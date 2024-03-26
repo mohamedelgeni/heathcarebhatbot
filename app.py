@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 
 API_URL = "https://api-inference.huggingface.co/models/gpt2"
+API_KEY = "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"
 
 st.title("GPT Chatbot")
 
@@ -9,7 +10,7 @@ message = st.text_area("Enter your message:", "")
 
 if st.button("Send"):
     headers = {
-        "Authorization": f"Bearer {API_URL}",
+        "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
     data = {
@@ -24,4 +25,3 @@ if st.button("Send"):
         st.text_area("Bot's reply:", reply, height=200)
     else:
         st.error(f"Failed to get response from the bot. Status code: {response.status_code}. Response: {response.text}")
-
