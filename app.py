@@ -60,7 +60,7 @@ def generate_llama2_response(prompt_input):
 
 # User-Provided Prompt
 
-if prompt := st.chat_input(disabled=True):
+if prompt := st.chat_input(disabled=False):
     st.session_state.messages.append({"role": "user", "content":prompt})
     with st.chat_message("user"):
         st.write(prompt)
