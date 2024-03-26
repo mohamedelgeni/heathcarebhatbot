@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 API_URL = "https://api-inference.huggingface.co/models/gpt2"
-API_KEY = "sk-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"
+API_KEY = "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"
 
 st.title("GPT Chatbot")
 
