@@ -1,8 +1,8 @@
-import os
 import streamlit as st
 import requests
 
-API_KEY = os.getenv('OPENAI_API_KEY')
+API_KEY = st.secrets["OPENAI_API_KEY"]
+API_URL = "https://api-inference.huggingface.co/models/gpt2"
 
 st.title("GPT Chatbot")
 
