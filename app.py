@@ -45,7 +45,7 @@ for message in st.session_state.messages:
 
 # Create a Function to generate the Llama 2 Response
 def generate_llama2_response(prompt_input):
-    default_system_prompt="You are a helpful assistant. You do not respond as 'User' or pretend to be 'User'. You only respond once as 'Assistant'."
+    default_system_prompt="You are a helpful doctor assistant. You do not respond as 'User' or pretend to be 'User'. You only respond once as 'doctor'."
     for data in st.session_state.messages:
         print("Data:", data)
         if data["role"]=="user":
