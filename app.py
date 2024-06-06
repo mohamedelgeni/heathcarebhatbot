@@ -1,82 +1,76 @@
-# Step 1: Import All the Required Libraries
-
-# We are creating a Webapp with Streamlit
 import streamlit as st
+from gradio_client import Client
+from PyPDF2 import PdfReader
 
-# Replicate is an online cloud platform that allows us to host models and access the models through API
-# Llama 2 models with 7B, 13 B and with 70B parameters are hosted on Replicated and we will access these models through API
+# Initialize the Gradio clients
+medical_client = Client("ruslanmv/Medical-Llama3-Chatbot")
+arabic_client = Client("MohamedRashad/Arabic-Chatbot-Arena")
 
-import replicate
-import os
+# Streamlit app title
+st.title("Medical Llama 3 Chatbot")
 
-# Step 2: Add a title to your Streamlit Application on Browser
+# Tab layout for the two chatbots
+tab1, tab2 = st.tabs(["Medical Chatbot", "general Chatbot"])
 
-st.set_page_config(page_title="💬  Chatbot ")
+with tab1:
+    st.header("Medical Llama 3 Chatbot")
 
-#Create a Side bar
-with st.sidebar:
-    st.title("💬 Chatbot")
-    st.header(" ")
+    # File upload for PDF
+    uploaded_file = st.file_uploader("Upload your medical history (PDF)", type="pdf")
 
-    add_replicate_api = st.secrets["REPLICATE_API_TOKEN"]
-    if not (add_replicate_api and add_replicate_api.startswith('r8_') and len(add_replicate_api)==40):
-        st.warning('Please enter your credentials in the secrets.', icon='⚠️')
-        st.stop()
+    if uploaded_file is not None:
+        # Extract text from PDF
+        pdf_reader = PdfReader(uploaded_file)
+        pdf_text = ""
+        for page in pdf_reader.pages:
+            pdf_text += page.extract_text()
 
-    st.subheader(" ")
+        st.write("Extracted Text:")
+        st.write(pdf_text)
 
-    llm = 'a16z-infra/llama7b-v2-chat:4f0a4744c7295c024a1de15e1a63c880d3da035fa1f49bfd344fe076074c8eea'
+        # Input field for additional question
+        question = st.text_input("Enter your question:")
 
-    temperature = 0.1
-    top_p = 0.9
-    max_length = 512
+        if st.button("Get Medical Advice"):
+            # Call the Gradio model with extracted text and question
+            result = medical_client.predict(
+                symptoms=pdf_text,
+                question=question,
+                api_name="/predict"
+            )
+            # Display the result
+            st.write("Response:")
+            st.write(result)
 
-# Store the LLM Generated Response
+with tab2:
+    st.header("general  Arabic Chatbot ")
 
-if "messages" not in st.session_state.keys():
-    st.session_state.messages=[{"role": "assistant", "content":"How may I assist you today?"}]
+    # Text input for user
+    user_input = st.text_input("You: ", "")
 
-# Display the chat messages
+    # Button to send the user input
+    if st.button("Send"):
+        if user_input:
+            # Call the Gradio client with the user input
+            result = arabic_client.predict(
+                system_prompt="أنت متحدث لبق باللغة العربية!",
+                input_text=user_input,
+                new_chatbot=[],
+                max_new_tokens=120,
+                temperature=0.2,
+                top_p=0.9,
+                repetition_penalty=1.1,
+                api_name="/generate_both"
+            )
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+            def clean_output(output):
+                # Convert list of lists to string and replace unwanted characters
+                text = str(output)
+                text = text.replace("[[", "").replace("]]", "").replace("', '", "\n\n")
+                text = text.replace("\\n", "\n")
+                return text
 
+            formatted_result = clean_output(result)
 
-# Create a Function to generate the Llama 2 Response
-def generate_llama2_response(prompt_input):
-    default_system_prompt="You are a helpful doctor assistant. You do not respond as 'User' or pretend to be 'User'. You only respond once as 'doctor'."
-    for data in st.session_state.messages:
-        print("Data:", data)
-        if data["role"]=="user":
-            default_system_prompt+="User: " + data["content"] + "\n\n"
-        else:
-            default_system_prompt+="Assistant" + data["content"] + "\n\n"
-    output=replicate.run(llm, input={"prompt": f"{default_system_prompt} {prompt_input} Assistant: ",
-                                     "temperature": temperature, "top_p":top_p, "max_length": max_length, "repititon_penalty":1})
-
-    return output
-
-
-# User-Provided Prompt
-
-if prompt := st.chat_input(disabled=False):
-    st.session_state.messages.append({"role": "user", "content":prompt})
-    with st.chat_message("user"):
-        st.write(prompt)
-
-# Generate a New Response if the last message is not from the assistant
-
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response=generate_llama2_response(prompt)
-            placeholder=st.empty()
-            full_response=''
-            for item in response:
-                full_response+=item
-                placeholder.markdown(full_response)
-            placeholder.markdown(full_response)
-
-    message= {"role":"assistant", "content":full_response}
-    st.session_state.messages.append(message)
+            # Display the formatted result
+            st.markdown(f"**Bot:**\n\n{formatted_result}", unsafe_allow_html=True)
